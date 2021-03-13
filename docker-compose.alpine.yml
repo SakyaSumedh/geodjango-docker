@@ -1,0 +1,39 @@
+version: '3.9'
+
+volumes:
+  dbdata:
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/site
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: geodjango_backend_alpine
+    depends_on:
+      - psql
+    networks:
+      - backend
+
+  psql:
+    image: postgis/postgis
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    container_name: geodjango_db_alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - dbdata:/var/lib/postgresql
+    networks:
+      - backend

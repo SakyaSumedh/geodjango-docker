@@ -1,0 +1,7 @@
+.git
+*.pyc
+*.md
+db.sqlite3
+venv/
+.env.example
+.gitignore
